@@ -1,69 +1,28 @@
-# Create-ROS2-World
+# Create a ROS 2 World in ROS 2 Galactic from import Sketchfab models
 
-# Step 1: Launch Gazebo Empty World
+# Step 1: Launch Gazebo Empty World and Spawn Robot
 
-**1. Create a ROS 2 package (if you don't already have one):**
-
-```bash
-cd /ros2_ws/src/
-ros2 pkg create my_custom_world --build-type ament_cmake
-```
-
-**2. Create a launch file:**
 
 ```bash
-cd /ros2_ws/src/my_custom_world
-mkdir launch
-touch launch/gazebo_launch.py
+ros2 launch my_custom_world start_empty_world.launch.py
 ```
 
-**3. Edit the launch file (gazebo_launch.py):**
+# Step 2: Spawn models into world
 
-```bash
-from launch import LaunchDescription
-from launch_ros.actions import Node
-from launch.actions import IncludeLaunchDescription
-from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import PathJoinSubstitution
-from launch_ros.substitutions import FindPackageShare
+**1.** Download models in [Sketchfab](https://sketchfab.com/feed)
 
-def generate_launch_description():
-    gazebo_pkg_share = FindPackageShare(package='gazebo_ros').find('gazebo_ros')
+**2.** Import them in Blender and do your edits (Add multiple models, join them, scale them, position them ...)
 
-    # Include the Gazebo launch file
-    gazebo = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([PathJoinSubstitution([gazebo_pkg_share, 'launch', 'gzserver.launch.py'])])
-    )
+**3.** Export Blender file as a **Collada** file (.dae). For example name it **my_env.dae**.
 
-    # Optionally, include the Gazebo client (GUI)
-    gzclient = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([PathJoinSubstitution([gazebo_pkg_share, 'launch', 'gzclient.launch.py'])])
-    )
+**4.** Add the new model data into the **models** folder.
 
-    return LaunchDescription([
-        gazebo,
-        gzclient
-    ])
-```
-**4. Modify CMakeLists.txt:**
+# Step 3: Save world from Gazebo
 
-```bash
-install(
-  DIRECTORY launch
-  DESTINATION share/${PROJECT_NAME}
-)
+**1.** In Gazebo select: **File** then **Save World As**.
 
-```
+**2.** Save it inside the **worlds** folder and name it **my_world.world**.
 
-**5. Build your package and source workspace**
+**3.** Update **start_my_world.launch.py** so that it reads the new **my_world.world** file.
 
-```bash
-cd /ros2_ws
-colcon build --packages-select my_custom_world
-source /ros2_ws/install/setup.bash
-```
-**6. Launch Gazebo using the launch file:**
-
-```bash
-ros2 launch my_custom_world gazebo_launch.py
-```
+**4.** All this is done so that we can directly launch the final world from the **start_my_world.launch.py**
